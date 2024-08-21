@@ -9,21 +9,24 @@ export default function Filmes() {
     const limit = 6;
     const [offset, setOffset] = useState(0);
     const [films, setFilms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const current = offset / limit + 1;
 
     useEffect(() => {
-        fetch('http://localhost:3000/films')
-        .then((resposta) => {
-            if (!resposta.ok) {
-                throw new Error('Erro na resposta da API');
+        const fetchMovies = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch('http://localhost:3000/films');
+                const data = await response.json();
+                setFilms(data);
+            } catch (error) {
+                console.error("Erro Api", error);
             }
-            return resposta.json();
-        })
-        .then((data) => {
-            setFilms(data)
-        })
-        .catch((error) => {
-            console.error('Erro ao buscar dados:', error);
-        });
+            finally {
+                setLoading(false);
+            }
+        }
+        fetchMovies();
     }, []);
 
     const allMovies = films
@@ -35,16 +38,20 @@ export default function Filmes() {
             <section className={styles.moviesList}>
                 <h2>Filmes</h2>
                 <div className={styles.movies}>
-                    {currentMovies.map((film) => (
-                        <MovieCard
-                            key={film.id}
-                            movieCoverImg={film.Url}
-                            movieName={film.title}
-                            movieDirector={film.diretor}
-                            movieDescription={film.sinopse}
-                            movieGenres={film.genero}
-                        />
-                    ))}
+                    {loading ? (
+                        <p>Carregando filmes...</p>
+                    ) : (
+                        currentMovies.map((film) => (
+                            <MovieCard
+                                key={film.id}
+                                movieCoverImg={film.Url}
+                                movieName={film.title}
+                                movieDirector={film.diretor}
+                                movieDescription={film.sinopse}
+                                movieGenres={film.genero}
+                            />
+                        ))
+                    )}
                 </div>
             </section>
             <div className={styles.pagesButton}>
