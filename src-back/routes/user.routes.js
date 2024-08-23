@@ -12,6 +12,7 @@ import { createUser, loginUser } from "../controllers/user.controllers.js"
 userRoutes.post('/',checkUserExist,(req,res)=>createUser(req,res));
 
 //login User
-userRoutes.get('/login', loginUser);
+userRoutes.post('/login', loginUser);
+
 
 export default userRoutes;
